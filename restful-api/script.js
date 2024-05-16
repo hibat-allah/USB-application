@@ -39,7 +39,7 @@ async function getPaths(folderPath){
 app.post("/analyze", async function (req, res, next) {
     const folderPath = '/data'; // Change this to the folder path where files are copied in the container
     // console.log("Received analysis request");
-    const badFiles = []
+    let badFiles = []
     
     const folder_paths = await getPaths(folderPath)
     console.log("All folders paths from outside fnc :\n",folder_paths)
