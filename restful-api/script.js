@@ -53,8 +53,9 @@ app.post("/analyze", async function (req, res, next) {
             ClamScan.then(async (x) =>{
                 const result = await x.scanFile(filePath);
                
-                if (!result || result.isInfected === 'true') {
+                if (!result || result.isInfected === true) {
                     badFiles.push({ file, result });
+                    console.log("bad files:\n",badFiles,"\n")
                     console.log("bad file ",filePath,"\n result:",result,"\n --- \n result.isInfected: ",result.isInfected)
                 }
             })
