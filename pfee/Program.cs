@@ -8,6 +8,7 @@ using System.Security.Claims;
 using RestartDevice;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+
 class Program
 
 
@@ -30,22 +31,14 @@ class Program
                 //new ClasseDrives("{4d36e972-e325-11ce-bfc1-08002be10318}", "USB\\Class_FF","5")
                
             };
-    static void Main(string[] args)
-    {
-        foreach (var item in usbclassDr)
-{
-    Console.WriteLine($"GUID: {item.guid}, DrivesClass: {item.drivesClass}");
-}
-
-       // liste devices autorisé 
+             // liste devices autorisé 
        
-        
-        List<Device> usbdevices = new List<Device>{
+       static  List<Device> usbdevices = new List<Device>{
         new Device("USB\\VID_1D57&PID_130F"  , "souris" ,"microsoft" ,"{745A17A0-74D3-11D0-B6FE-00A0C90F57DA}" , "usb.inf"),
         new Device("USB\\VID_0BDA&PID_8179"  , "RTL8188EU Wireless LAN 802.11n USB 2.0" ,"microsoft" ,"{4d36e972-e325-11ce-bfc1-08002be10318} ", "netrtwlanu.inf"),
         };
         // liste des classe autoriser 
-         List<ClasseD> usbclasses = new List<ClasseD>
+        static  List<ClasseD> usbclasses = new List<ClasseD>
             {
                 new ClasseD("HIDUSB", "{745A17A0-74D3-11D0-B6FE-00A0C90F57DA}", "SYSTEM\\CurrentControlSet\\Services\\HidUsb"),
                 //new ClasseD("USBStore", "{4D36E967-E325-11CE-BFC1-08002BE10318}", "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\USBSTOR"),
@@ -54,96 +47,33 @@ class Program
                 new ClasseD("RtlWlanu", "{4d36e972-e325-11ce-bfc1-08002be10318}", "SYSTEM\\CurrentControlSet\\Services\\RtlWlanu"),
                 // Ajoutez ici d'autres types de périphériques USB avec leurs GUID et chemins
             };
-            Instance instance1 = new Instance ("USB\\VID_0BDA&PID_8179\\00E04C0001");
-            Instance instance2 = new Instance ("USB\\VID_1D57&PID_130F\\5&15C64844&0&3");
-            Instance instance3 = new Instance ("USB\\VID_1D57&PID_130F&MI_00\\6&23EF43A7&12&0000");
-            Instance instance4 = new Instance ("USB\\VID_1D57&PID_130F&MI_01\\6&23EF43A7&12&0001");
-            Instance instance5 = new Instance ("HID\\VID_1D57&PID_130F&MI_00&COL01\\7&1304E89B&0&0000");
+    static void Main(string[] args)
+    {
+         // Créer une requête pour détecter les événements d'insertion et de suppression de périphériques
+        string query = "SELECT * FROM __InstanceOperationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_PnPEntity'";
 
-           
-
-             
-            
-
-           
-
-        // Écoute des événements de branchement de périphériques
+        // Créer un ManagementEventWatcher pour surveiller les événements WMI
         ManagementEventWatcher watcher = new ManagementEventWatcher();
-        watcher.EventArrived += (sender, e) =>
-        {
-            string eventType = e.NewEvent.ClassPath.ClassName;
-            
-            if (eventType == "__InstanceCreationEvent")
+        watcher.Query = new WqlEventQuery(query);
 
-            {
-                // Périphérique branché
-                ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
-               // Console.WriteLine("eefs"+instance["DisplayName"].ToString());
-                string vidpid = ExtractUSBVidPid(instance["DeviceID"].ToString());
-                Console.WriteLine(instance);
-                Console.WriteLine(vidpid);
-                Console.WriteLine("kk");
-                string classS = ExtractDeviceClass(instance);
-                Console.WriteLine("kk5");
-                
-
-                
-
-                if (string.IsNullOrEmpty(classS)) {
-                Console.WriteLine("kk4");
-                
-                 //DisplayDeviceInfo(instance);
-            if (IsDeviceAllowed(vidpid, usbdevices))
-            {
-               
-                //Restart restart = new Restart();
-                //restart.restartDev(instance["DeviceID"].ToString());
-                Console.WriteLine("kk2");
-                Console.WriteLine("Peripherique autorisé "+ instance["DeviceID"].ToString());
-                }    
-                             
-                // Autoriser l'installation des pilotes ou prendre d'autres actions nécessaires
-            else
-            {
-                
-                Console.WriteLine("Périphérique non autorisé détecté: " + instance["DeviceID"].ToString());
-                // Interdire l'installation des pilotes ou prendre d'autres mesures nécessaires
-            }
-              } 
-                
-            }
-            else if (eventType == "__InstanceDeletionEvent")
-            {
-                // Périphérique débranché
-                ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
-                DisplayDeviceInfo(instance);
-
-            }
-        };
-       
-        //WqlEventQuery query = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_PnPEntity' ");
-        //WqlEventQuery query = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_PnPEntity' AND TargetInstance.ConfigManagerErrorCode <> 0");
-        // WqlEventQuery query = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_PnPEntity' AND TargetInstance.DeviceID LIKE '%VEN_Unknown%'");
-        //WqlEventQuery query = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_PnPEntity' AND TargetInstance.PNPClass = 'Unknown'");
-        //WqlEventQuery query = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_PnPEntity' AND TargetInstance.Service = 'null'");
-       WqlEventQuery query = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_PnPEntity'  ");
-
-
-        watcher.Query = query;
+        // Ajouter un gestionnaire d'événements pour gérer les événements de branchement et de débranchement
+        watcher.EventArrived += new EventArrivedEventHandler(USBEventArrived);
+        
+        // Démarrer la surveillance
         watcher.Start();
-
-         foreach (var item in usbclasses)
+        foreach (var item in usbclasses)
             {
                 ActivateStartValue(item.Chemin);
                 AddToGpo(item.GUID );
                 
             }
+        Console.WriteLine("Surveillance des événements USB. Appuyez sur Enter pour quitter.");
+        Console.ReadLine();
 
-
-        Console.WriteLine("Écoute des périphériques branchés en cours. Appuyez sur une touche pour arrêter...");
-        Console.ReadKey();
-
+        // Arrêter la surveillance lorsque l'utilisateur appuie sur Enter
         watcher.Stop();
+              
+    
     }
 
     // Affiche les informations sur le périphérique
@@ -157,7 +87,6 @@ class Program
         
         Console.WriteLine("--------------------------------------------");
     }
-
     static void ActivateStartValue(string registryPath)
         {
             try
@@ -182,8 +111,6 @@ class Program
                 Console.WriteLine($"Une erreur s'est produite lors de la modification de la clé de registre '{registryPath}': {ex.Message}");
             }
         }
-    
-    
     static bool IsDeviceAllowed(string vidPid, List<Device> allowedDeviceIds)
     {
         string registryPath = "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceInstall\\Restrictions\\AllowDeviceIDs";
@@ -270,7 +197,7 @@ class Program
         foreach (var item in usbclassDr)
             {
                 Console.WriteLine("cc"+item.drivesClass);
-
+                
                      // Vérifier si le GUID du périphérique existe dans usbclasses
                 if (guid.Equals(item.guid, StringComparison.OrdinalIgnoreCase))
                     {
@@ -331,7 +258,48 @@ class Program
         Console.WriteLine($"Une erreur s'est produite lors de la modification de la clé de registre '{registryPath}': {ex.Message}");
     }
 
-   
+       }
+
+
+    private static void USBEventArrived(object sender, EventArrivedEventArgs e)
+    {
+        // Vérifier le type d'événement
+        if (e.NewEvent.ClassPath.ClassName == "__InstanceCreationEvent")
+        {
+            // Périphérique branché
+            ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
+               // Console.WriteLine("eefs"+instance["DisplayName"].ToString());
+            string vidpid = ExtractUSBVidPid(instance["DeviceID"].ToString());
+            Console.WriteLine(instance);
+            Console.WriteLine(vidpid);
+                
+            string classS = ExtractDeviceClass(instance);
+                
+            if (string.IsNullOrEmpty(classS)) {                
+                 //DisplayDeviceInfo(instance);
+                if (IsDeviceAllowed(vidpid, usbdevices))
+                    {
+               
+                    //Restart restart = new Restart();
+                    //restart.restartDev(instance["DeviceID"].ToString());
+                
+                    Console.WriteLine("Peripherique autorisé "+ instance["DeviceID"].ToString());
+                }    
+                             
+                // Autoriser l'installation des pilotes ou prendre d'autres actions nécessaires
+            else
+            {
+                Console.WriteLine("Périphérique non autorisé détecté: " + instance["DeviceID"].ToString());
+                // Interdire l'installation des pilotes ou prendre d'autres mesures nécessaires
+            }
+              } 
+            
+        }
+        else if (e.NewEvent.ClassPath.ClassName == "__InstanceDeletionEvent")
+        {
+            ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
+            DisplayDeviceInfo(instance);
+        }
     }
 
    
