@@ -7,9 +7,9 @@ using Ionic.Zip;  // DotNetZip
 
 namespace ClientSideDocker
 {
-    /*
+    
     class Program
-    {/*
+    {
         static void Main(string[] args)
         {
             UsbDeviceListener usbListener = new UsbDeviceListener();
@@ -196,11 +196,11 @@ namespace ClientSideDocker
                 else if the result == undefined also block the device or somthing like that
                 if it's false means it doesn't containt a bad file so give him the access ( write and execute)
                  */
-    /*
+    
                 // Output the server's response
                 Console.WriteLine(responseContent);
             }
         }
     }
-    */
+    
 }
