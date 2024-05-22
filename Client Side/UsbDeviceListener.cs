@@ -1,38 +1,50 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management;
 
+
 namespace ClientSideDocker
 {
-
     public class UsbDeviceListener
     {
         public event Action<string> UsbDeviceConnected;
 
-        private ManagementEventWatcher _watcher;
+        private ManagementEventWatcher _insertWatcher;
+        private ManagementEventWatcher _removeWatcher;
         private List<string> _previousDriveLetters;
 
         public UsbDeviceListener()
         {
-            //Console.WriteLine("usb device listener ");
-            _watcher = new ManagementEventWatcher();
-            WqlEventQuery query = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 2");
-            _watcher.EventArrived += new EventArrivedEventHandler(DeviceInsertedEvent);
-            _watcher.Query = query;
+            _insertWatcher = new ManagementEventWatcher();
+            _removeWatcher = new ManagementEventWatcher();
+
+            WqlEventQuery insertQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 2");
+            WqlEventQuery removeQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 3");
+
+            _insertWatcher.EventArrived += new EventArrivedEventHandler(DeviceInsertedEvent);
+            _removeWatcher.EventArrived += new EventArrivedEventHandler(DeviceRemovedEvent);
+            //Console.WriteLine("Previous Drive Letters in the loop : " + string.Join(", ", _previousDriveLetters));
+ //Console.WriteLine("Previous Drive Letters in the loop : " + string.Join(", ", _previousDriveLetters));
+
+
+            _insertWatcher.Query = insertQuery;
+            _removeWatcher.Query = removeQuery;
+
             _previousDriveLetters = GetUsbDriveLetters();
-            //Console.WriteLine("previous drivers " + _previousDriveLetters);
         }
 
         public void StartListening()
         {
-            _watcher.Start();
+            _insertWatcher.Start();
+            _removeWatcher.Start();
         }
 
         public void StopListening()
         {
-            _watcher.Stop();
+            _insertWatcher.Stop();
+            _removeWatcher.Stop();
         }
 
         private void DeviceInsertedEvent(object sender, EventArrivedEventArgs e)
@@ -44,28 +56,34 @@ namespace ClientSideDocker
             }
         }
 
+        private void DeviceRemovedEvent(object sender, EventArrivedEventArgs e)
+        {
+            var removedDriveLetters = GetRemovedUsbDriveLetters();
+            foreach (var drive in removedDriveLetters)
+            {
+                _previousDriveLetters.Remove(drive);
+            }
+        }
+
         private string GetNewUsbDriveLetter()
         {
             var currentDriveLetters = GetDriveLetters();
-            //Console.WriteLine("current Drive Letters before loop: " + string.Join(", ", currentDriveLetters));
-
             foreach (var drive in currentDriveLetters)
             {
                 if (!_previousDriveLetters.Contains(drive))
                 {
-                    //Console.WriteLine("this letter is a new one " + drive);
-                    _previousDriveLetters = currentDriveLetters; // Update previous drives list
-                    //Console.WriteLine("Previous Drive Letters in the loop : " + string.Join(", ", _previousDriveLetters));
-
+                    _previousDriveLetters.Add(drive);
                     return drive;
                 }
             }
-            //Console.WriteLine("Previous Drive Letters: " + string.Join(", ", _previousDriveLetters));
-
-            _previousDriveLetters = currentDriveLetters; // Update previous drives list
             return null;
         }
 
+        private List<string> GetRemovedUsbDriveLetters()
+        {
+            var currentDriveLetters = GetDriveLetters();
+            return _previousDriveLetters.Except(currentDriveLetters).ToList();
+        }
 
         private List<string> GetUsbDriveLetters()
         {
@@ -74,7 +92,6 @@ namespace ClientSideDocker
             foreach (var drive in Environment.GetLogicalDrives())
             {
                 DriveInfo driveInfo = new DriveInfo(drive);
-                //Console.WriteLine("new device " + driveInfo.Name+ " type : "+driveInfo.DriveType);
                 if (driveInfo.DriveType == DriveType.Removable)
                 {
                     driveLetters.Add(drive);
@@ -83,6 +100,7 @@ namespace ClientSideDocker
 
             return driveLetters;
         }
+
         private List<string> GetDriveLetters()
         {
             List<string> driveLetters = new List<string>();
@@ -96,7 +114,6 @@ namespace ClientSideDocker
                 // Check if the drive is a removable disk or an external fixed disk
                 if (mediaType.Contains("Removable Media") || mediaType.Contains("External hard disk media"))
                 {
-
                     foreach (ManagementObject partition in drive.GetRelated("Win32_DiskPartition"))
                     {
                         foreach (ManagementObject logicalDisk in partition.GetRelated("Win32_LogicalDisk"))
@@ -106,9 +123,9 @@ namespace ClientSideDocker
                     }
                 }
             }
-            //Console.WriteLine("driveLetters " +driveLetters);
             return driveLetters;
         }
     }
-
 }
+
+
