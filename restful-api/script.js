@@ -16,16 +16,76 @@ const ClamScan = new NodeClam().init({
 });
 app = express();
 app.use(express.json());
-//app.use(bodyParser.json());
 function createSenderId(req) {
     const ipAddress = req.ip;
     const username = req.headers['username']; // Assumes username is sent in headers
     return `${ipAddress}_${username}`;
 }
 
+async function getPaths(folderPath){
+    let folder_paths=[folderPath]
+    let i = 0
+    while(true){
+    //   console.log("getting folder paths....",i)
+      const FILES = await fs.promises.readdir(folder_paths[i]);
+      for (const file of FILES) {
+        const filePath = path.join(folder_paths[i], file);
+        // console.log("files nd folders path:",filePath)
+        const stats = await fs.promises.stat(filePath);
+        // console.log("stats: ",stats)
+        if (stats.isDirectory()) {
+             folder_paths.push(filePath)
+            //  console.log("folder path:",folderPath)
+        }
+      }
+      i++
+      if (i == folder_paths.length) {
+        // console.log("finale folders paths:",folder_paths)
+        return folder_paths
+      }
+    }
+}
+
 const upload = multer({ dest: 'uploads/' }); // Destination folder for uploaded files
 
-// POST endpoint for file uploads
+
+app.post('/analyze', upload.single('file'), async (req, res) => {
+    try {
+        const filePath = req.file.path;
+        const username = req.headers['username'];
+
+        console.log(`Analyzing file: ${filePath} from user: ${username}`);
+
+        const scanResult = await ClamScan.then(clam => clam.scanFile(filePath));
+
+        console.log(`Scan result: ${JSON.stringify(scanResult)}`);
+
+        const isInfected = scanResult.isInfected === true;
+
+        if (isInfected) {
+            res.json(true);
+        } else {
+            res.json(false);
+        }
+
+        fs.unlink(filePath, err => {
+            if (err) {
+                console.error(`Error deleting file: ${filePath}`, err);
+            }
+        });
+    } catch (err) {
+        console.error('Error during file analysis:', err);
+        res.status(500).json([false]);
+    }
+});
+
+
+
+
+
+// previous version start here -------
+
+/* //!  POST endpoint for file uploads (the zip file of that folder) and sending it to /analyze 
 app.post('/upload', upload.single('file'), (req, res) => {
    try {
         if (!req.file ) {
@@ -72,34 +132,12 @@ app.post('/upload', upload.single('file'), (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+*/
 
 
 
 
-async function getPaths(folderPath){
-    let folder_paths=[folderPath]
-    let i = 0
-    while(true){
-    //   console.log("getting folder paths....",i)
-      const FILES = await fs.promises.readdir(folder_paths[i]);
-      for (const file of FILES) {
-        const filePath = path.join(folder_paths[i], file);
-        // console.log("files nd folders path:",filePath)
-        const stats = await fs.promises.stat(filePath);
-        // console.log("stats: ",stats)
-        if (stats.isDirectory()) {
-             folder_paths.push(filePath)
-            //  console.log("folder path:",folderPath)
-        }
-      }
-      i++
-      if (i == folder_paths.length) {
-        // console.log("finale folders paths:",folder_paths)
-        return folder_paths
-      }
-    }
-}
-
+/* //! analyzing the uploaded folder
 app.post("/analyze", async function (req, res, next) {
     
     //!here
@@ -166,9 +204,10 @@ app.post("/analyze", async function (req, res, next) {
   
   
 });
+*/
+// previous version ends here -------
 
-
-/* old one
+/* old one //! brahim's one
 app.post("/analyze", async function (req, res, next) {
     console.log("Received analysis request");
     ClamScan.then(async (x) =>{
@@ -176,6 +215,9 @@ app.post("/analyze", async function (req, res, next) {
         return res.json({ result })
     })
 });*/
+
+
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error:', err);
