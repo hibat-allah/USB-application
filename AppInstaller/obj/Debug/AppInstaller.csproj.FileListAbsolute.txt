@@ -1,0 +1,9 @@
+C:\Users\administrator\source\repos\AppInstaller\AppInstaller\bin\Debug\AppInstaller.exe.config
+C:\Users\administrator\source\repos\AppInstaller\AppInstaller\bin\Debug\AppInstaller.exe
+C:\Users\administrator\source\repos\AppInstaller\AppInstaller\bin\Debug\AppInstaller.pdb
+C:\Users\administrator\source\repos\AppInstaller\AppInstaller\obj\Debug\AppInstaller.csproj.AssemblyReference.cache
+C:\Users\administrator\source\repos\AppInstaller\AppInstaller\obj\Debug\Interop.IWshRuntimeLibrary.dll
+C:\Users\administrator\source\repos\AppInstaller\AppInstaller\obj\Debug\AppInstaller.csproj.ResolveComReference.cache
+C:\Users\administrator\source\repos\AppInstaller\AppInstaller\obj\Debug\AppInstaller.csproj.CoreCompileInputs.cache
+C:\Users\administrator\source\repos\AppInstaller\AppInstaller\obj\Debug\AppInstaller.exe
+C:\Users\administrator\source\repos\AppInstaller\AppInstaller\obj\Debug\AppInstaller.pdb
