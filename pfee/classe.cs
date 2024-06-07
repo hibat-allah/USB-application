@@ -22,13 +22,16 @@ namespace WhiteList
         public string Name { get; set; }
         public string GUID { get; set; }
         public string Chemin { get; set; }
+
+        public bool isAutorised {get; set;}
         
 
-        public ClasseD(string name, string guid, string chemin)
+        public ClasseD(string name, string guid, string chemin , bool auto)
         {
             Name = name;
             GUID = guid;
             Chemin = chemin;
+            isAutorised = auto ;
         }
         
                 
