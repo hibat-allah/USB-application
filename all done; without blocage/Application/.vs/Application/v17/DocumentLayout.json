@@ -1,0 +1,156 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\user\\source\\repos\\Application\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|C:\\Users\\user\\source\\repos\\Application\\newapp\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|solutionrelative:newapp\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|c:\\users\\user\\source\\repos\\application\\newapp\\logs.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|solutionrelative:newapp\\logs.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|c:\\users\\user\\source\\repos\\application\\newapp\\servers.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|solutionrelative:newapp\\servers.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|C:\\Users\\user\\source\\repos\\Application\\newapp\\docker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|solutionrelative:newapp\\docker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|c:\\users\\user\\source\\repos\\application\\newapp\\serverconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|solutionrelative:newapp\\serverconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|c:\\users\\user\\source\\repos\\application\\newapp\\usbdevicelistener.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|solutionrelative:newapp\\usbdevicelistener.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|C:\\Users\\user\\source\\repos\\Application\\newapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|solutionrelative:newapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|C:\\Users\\user\\source\\repos\\Application\\newapp\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{868BE9E2-9B6F-40E7-99AA-9C81AE441DC9}|NewApp\\Application.csproj|solutionrelative:newapp\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Logs.cs",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\Logs.cs",
+              "RelativeDocumentMoniker": "NewApp\\Logs.cs",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\Logs.cs",
+              "RelativeToolTip": "NewApp\\Logs.cs",
+              "ViewState": "AQIAAA4AAAAAAAAAAAAAwBwAAAAoAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-11T02:22:57.456Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "UsbDeviceListener.cs",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\UsbDeviceListener.cs",
+              "RelativeDocumentMoniker": "NewApp\\UsbDeviceListener.cs",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\UsbDeviceListener.cs",
+              "RelativeToolTip": "NewApp\\UsbDeviceListener.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-11T12:40:14.776Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ServerConfig.cs",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\ServerConfig.cs",
+              "RelativeDocumentMoniker": "NewApp\\ServerConfig.cs",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\ServerConfig.cs",
+              "RelativeToolTip": "NewApp\\ServerConfig.cs",
+              "ViewState": "AQIAAA4AAAAAAAAAAAAgwBAAAAAkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-11T12:09:54.165Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "servers.json",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\servers.json",
+              "RelativeDocumentMoniker": "NewApp\\servers.json",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\servers.json",
+              "RelativeToolTip": "NewApp\\servers.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAjAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-06-11T12:09:17.241Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Form1.cs",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\Form1.cs",
+              "RelativeDocumentMoniker": "NewApp\\Form1.cs",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\Form1.cs",
+              "RelativeToolTip": "NewApp\\Form1.cs",
+              "ViewState": "AQIAAEwCAAAAAAAAAAAUwGMCAACCAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-04T16:06:25.15Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Docker.cs",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\Docker.cs",
+              "RelativeDocumentMoniker": "NewApp\\Docker.cs",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\Docker.cs",
+              "RelativeToolTip": "NewApp\\Docker.cs",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAlwBMAAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-05T10:55:20.885Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\Program.cs",
+              "RelativeDocumentMoniker": "NewApp\\Program.cs",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\Program.cs",
+              "RelativeToolTip": "NewApp\\Program.cs",
+              "ViewState": "AQIAAEIAAAAAAAAAAAAqwFMAAABOAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-04T16:04:55.11Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Form1.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\Form1.cs",
+              "RelativeDocumentMoniker": "NewApp\\Form1.cs",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\Application\\NewApp\\Form1.cs [Design]",
+              "RelativeToolTip": "NewApp\\Form1.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-04T16:05:42.687Z",
+              "EditorCaption": " [Design]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
