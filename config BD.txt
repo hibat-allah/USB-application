@@ -17,7 +17,7 @@ GRANT ALL PRIVILEGES ON DATABASE entreprisebd TO zflub;
 ALTER DATABASE entreprisebd OWNER TO zflub;
 GRANT USAGE ON SCHEMA public TO zflub;
 
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO zflub;
+GRANT SELECT, INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO zflub;
 
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO xlient;
 
@@ -133,16 +133,16 @@ grant usage,select on sequence logs_log_id_seq to zflub;
 grant select, insert,update on table logs to zflub;
 
 
-
-
+INSERT INTO Class_Users VALUES (
+'{4d36e967-e325-11ce-bfc1-08002be10318}','user');
 
 INSERT INTO Class (guid, chemain, type, description) VALUES
-('{4d36e967-e325-11ce-bfc1-08002be10318}', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\USBSTOR', 'USBSTOR', 'Peripherique de stockage USB'),
-('{1ed2bbf9-11f0-4084-b21f-ad83a8e6dcdc}', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\usbprint', 'usbprint','Imprimante USB'),
-('{745a17a0-74d3-11d0-b6fe-00a0c90f57da}', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\HidUsb', 'HidUsb','Peripherique d interface humaine (souris / claviers...)'),
-('{eec5ad98-8080-425f-922a-dabf3de3f69a}', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\WINUSB', 'WINUSB','Disque dur externe'),
-('{ca3e7ab9-b4c3-4ae6-8251-579ef933890f}', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\usbvideo', 'webcam','Peripherique video USB (webcam)'),
-('{4d36e972-e325-11ce-bfc1-08002be10318}', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\RtlWlanu', 'RtlWlanu','Carte réseau sans fil USB');
+('{4d36e967-e325-11ce-bfc1-08002be10318}', 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\USBSTOR', 'USBSTOR', 'Peripherique de stockage USB'),
+('{1ed2bbf9-11f0-4084-b21f-ad83a8e6dcdc}', 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\usbprint', 'usbprint','Imprimante USB'),
+('{745a17a0-74d3-11d0-b6fe-00a0c90f57da}', 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\HidUsb', 'HidUsb','Peripherique d interface humaine (souris / claviers...)'),
+('{eec5ad98-8080-425f-922a-dabf3de3f69a}', 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WINUSB', 'WINUSB','Disque dur externe'),
+('{ca3e7ab9-b4c3-4ae6-8251-579ef933890f}', 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\usbvideo', 'webcam','Peripherique video USB (webcam)'),
+('{4d36e972-e325-11ce-bfc1-08002be10318}', 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\RtlWlanu', 'RtlWlanu','Carte réseau sans fil USB');
 
 
 INSERT INTO  device_users (device_id, user_id) VALUES 
@@ -160,7 +160,20 @@ INSERT INTO Users (email, userName, firstTime, password)
 VALUES ('user@entreprisemail.dz', 'user', false, NULL);
 
 
-Insert inro machine values ('USER','selectif') On conflict (nameM) DO NOTHING;
+Insert into machine values ('USER','selectif') On conflict (nameM) DO NOTHING;
+
+
+Insert into DriverClass values ('{88BAE032-5A81-49F0-BC3D-A4FF138216D6}','USB\Class_02');
+Insert into DriverClass values ('{4d36e967-e325-11ce-bfc1-08002be10318}','STORAGE\VOLUME');
+Insert into DriverClass values ('{4d36e967-e325-11ce-bfc1-08002be10318}','GenDisk');
+Insert into DriverClass values ('{4d36e967-e325-11ce-bfc1-08002be10318}','USBSTOR\DISK');
+Insert into DriverClass values ('{745a17a0-74d3-11d0-b6fe-00a0c90f57da}','HID\DEVICE');
+Insert into DriverClass values ('{745a17a0-74d3-11d0-b6fe-00a0c90f57da}','USB\Class_03');
+Insert into DriverClass values (' ',' ');
+Insert into DriverClass values (' ',' ');
+new ClasseDrives( "{88BAE032-5A81-49F0-BC3D-A4FF138216D6}","USB\\Class_02","2"),
+new ClasseDrives("{745A17A0-74D3-11D0-B6FE-00A0C90F57DA}", "HID_DEVICE","3"),
+new ClasseDrives("{745A17A0-74D3-11D0-B6FE-00A0C90F57DA}", "USB\\Class_03","4"),
 
 --deletion of the content
 delete from ..;

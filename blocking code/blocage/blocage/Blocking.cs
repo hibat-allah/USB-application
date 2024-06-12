@@ -404,6 +404,7 @@ namespace blocage
     public class Blocking
     {
         //private static string connectionString = "Host=ServerIP;Port=5432;Username=zflub;Password=M#N@d31N;Database=entreprisebd";
+        private static List<string> allowedDeviceIds = new List<string>();
 
         static void Main(string[] args)
         {
@@ -419,13 +420,14 @@ namespace blocage
 
             watcher.Start();
             BD.ProcessAuthorizedUsbClasses();
+
             Console.WriteLine("Surveillance des événements USB. Appuyez sur Enter pour quitter.");
             Console.ReadKey();
-
+            /*
             Console.WriteLine("blocking the same device");
 
             block.blockUSB("USB\\VID_058F&PID_6387");
-            Console.ReadKey();
+            Console.ReadKey();*/
             // Stop monitoring when the user presses Enter
             watcher.Stop();
         }
@@ -454,18 +456,26 @@ namespace blocage
         public static void BlockingUSB(object sender, EventArrivedEventArgs e)
         {
             // Check the event type
-            if (e.NewEvent.ClassPath.ClassName == "__InstanceCreationEvent")
-            {
-                // Retrieve the device ID from the listener
                 ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
                 string fullDeviceId = instance["DeviceID"].ToString();
-                string vidpid = ExtractUSBVidPid(fullDeviceId);
-                string deviceId = ExtractDeviceId(fullDeviceId);
-                string regid= regId(fullDeviceId);
+                string vidpid = ExtractUSBVidPid(fullDeviceId);// vid&pid
+                string deviceId = ExtractDeviceId(fullDeviceId);//bd usb //
+                string regid= regId(fullDeviceId); // reg usb/
                 Console.WriteLine($"Device ID: {fullDeviceId}");
                 Console.WriteLine($"Formatted Device ID: {deviceId}");
                 Console.WriteLine($"VID_PID: {vidpid}");
                 Console.WriteLine($"regid: {regid}");
+            if (e.NewEvent.ClassPath.ClassName == "__InstanceCreationEvent")
+            {
+                // Retrieve the device ID from the listener
+
+                if (allowedDeviceIds.Contains(deviceId) || allowedDeviceIds.Contains(regid))
+                {
+                    Console.WriteLine("Device is already allowed, ignoring...");
+                    return;
+                }
+
+
                 bool allowed = IsUSBAllowed(deviceId);
                 Console.WriteLine($"Is USB Allowed: {allowed}");
                 string registryPath= "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceInstall\\Restrictions\\AllowDeviceIDs";
@@ -477,15 +487,27 @@ namespace blocage
                     string inf = BD.GetDeviceInfFile(deviceId);
                     if (inf != null)
                     {
-                        string fullInfPath = "C:\\Windows\\inf\\" + inf;
+                        //string fullInfPath = "C:\\Windows\\inf\\" + inf;
+                        //Console.WriteLine($"INF Path: {fullInfPath}");
+                        string fullInfPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "INF", inf);
                         Console.WriteLine($"INF Path: {fullInfPath}");
+
                         ModifyRegistry(registryPath, vidpid, regid);
                         ModifyRegistry(registryPath2, vidpid, regid);
-                        CheckAndAddAdditionalValues(registryPath);
-                        CheckAndAddAdditionalValues(registryPath2);
-                        InstallDriver(deviceId, fullInfPath);
+                        //CheckAndAddAdditionalValues(registryPath);
+                        //CheckAndAddAdditionalValues(registryPath2);
+                        //InstallDriver(deviceId, fullInfPath);
 
-                        }
+                        var relatedDeviceIds = BD.GetRelatedDeviceIds(deviceId);
+                        List<string> relatedDeviceIds2 = relatedDeviceIds;
+                        AllowAdditionalInstances(relatedDeviceIds2,fullDeviceId, registryPath, registryPath2);
+
+                        // Install drivers for the main device and its related instances
+                        InstallDriver(deviceId, fullInfPath);
+                        AllowRelatedInstances(relatedDeviceIds2,deviceId, fullInfPath);
+                        allowedDeviceIds.AddRange(relatedDeviceIds2);
+
+                    }
                 }
                 else
                 {
@@ -504,8 +526,53 @@ namespace blocage
                     }
                 }
             }
+            else if (e.NewEvent.ClassPath.ClassName == "__InstanceDeletionEvent")
+            {
+                Console.WriteLine($"Device removed: {fullDeviceId}");
+                if (allowedDeviceIds.Contains(deviceId))
+                {
+                    allowedDeviceIds.Remove(deviceId);
+                    allowedDeviceIds.Remove(regid);
+                    List<string> relatedDeviceIds = BD.GetRelatedDeviceIds(deviceId);
+                    foreach (string relatedDeviceId in relatedDeviceIds)
+                    {
+                        allowedDeviceIds.Remove(relatedDeviceId);
+                    }
+
+                    // Uninstall or block related instances
+                    foreach (string relatedDeviceId in relatedDeviceIds)
+                    {
+                        try
+                        {
+                            block.blockUSB(relatedDeviceId);
+                            Console.WriteLine($"Uninstalled related device: {relatedDeviceId}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error uninstalling related device {relatedDeviceId}: {ex.Message}");
+                        }
+                    }
+                }
+            }
+        }
+        static void AllowAdditionalInstances(List<string> relatedDeviceIds,string deviceId, string registryPath, string registryPath2)
+        {
+           
+            foreach (var relatedDeviceId in relatedDeviceIds)
+            {
+                string regId= relatedDeviceId;
+                ModifyRegistry(registryPath, relatedDeviceId, regId);
+                ModifyRegistry(registryPath2, relatedDeviceId, regId);
+            }
         }
 
+        static void AllowRelatedInstances(List<string> relatedDeviceIds, string deviceId, string fullInfPath)
+        {;
+            foreach (var relatedDeviceId in relatedDeviceIds)
+            {
+                InstallDriver(relatedDeviceId, fullInfPath);
+            }
+        }
         static void CheckAndAddAdditionalValues(string registryPath)
         {
             // Additional string values to check and add if necessary
@@ -617,7 +684,7 @@ namespace blocage
             try
             {
                 bool rebootRequired;
-                bool success = UpdateDriverForPlugAndPlayDevices(IntPtr.Zero, deviceId, fullInfPath, INSTALLFLAG_FORCE, out rebootRequired);
+                bool success = UpdateDriverForPlugAndPlayDevices(IntPtr.Zero, deviceId, fullInfPath, 0, out rebootRequired);
 
                 if (!success)
                 {
@@ -635,14 +702,23 @@ namespace blocage
 
         public static bool IsUSBAllowed(string deviceId)
         {
-            if (BD.CheckDeviceForUser(deviceId) && BD.CheckDeviceType(deviceId))
+            if (BD.CheckDeviceType(deviceId))
             {
-                Console.Write("Veuillez entrer votre mot de passe : ");
-                string password = "Hello123!"; // For testing purposes; replace with Console.ReadLine();
+                if (BD.CheckDeviceForUser(deviceId) && BD.CheckDeviceType(deviceId))
+                {
+                    Console.Write("Veuillez entrer votre mot de passe : ");
+                    string password = "Hello123!"; // For testing purposes; replace with Console.ReadLine();
 
-                return BD.CheckPassword(password);
+                    return BD.CheckPassword(password);
+                }
+                return false;
+
             }
-            return false;
+            else { 
+                
+                
+                return true; 
+            }
         }
 
         // P/Invoke declarations

@@ -255,5 +255,50 @@ namespace blocage
                 Console.WriteLine($"Error processing USB classes: {ex.Message}");
             }
         }
+        public static List<string> GetRelatedDeviceIds(string deviceId)
+        {
+            List<string> relatedDeviceIds = new List<string>();
+
+            try
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    // Query to fetch GUID based on deviceId
+                    string query = "SELECT classi_id FROM iddevice WHERE iddevice = @deviceId";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("deviceId", deviceId);
+                        var classi_id = cmd.ExecuteScalar();
+
+                        // Query to fetch namedrives based on GUID
+                        query = "SELECT namedrives FROM driverclass WHERE guid = @guid";
+
+                        using (var cmd2 = new NpgsqlCommand(query, conn))
+                        {
+                            cmd2.Parameters.AddWithValue("guid", classi_id);
+                            using (var reader = cmd2.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    relatedDeviceIds.Add(reader.GetString(0));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching related device IDs: {ex.Message}");
+            }
+
+            return relatedDeviceIds;
+        }
+
+
+
     }
 }
