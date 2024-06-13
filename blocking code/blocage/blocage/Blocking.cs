@@ -474,8 +474,8 @@ namespace blocage
                         string fullInfPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "INF", inf);
                         Console.WriteLine($"INF Path: {fullInfPath}");
 
-                        ModifyRegistry(registryPath, vidpid, regid);
-                        ModifyRegistry(registryPath2, vidpid, regid);
+                        ModifyRegistry(registryPath, regid, regid);
+                        ModifyRegistry(registryPath2, regid, regid);
                         //CheckAndAddAdditionalValues(registryPath);
                         //CheckAndAddAdditionalValues(registryPath2);
                         //InstallDriver(deviceId, fullInfPath);
@@ -511,12 +511,12 @@ namespace blocage
             }
             else if (e.NewEvent.ClassPath.ClassName == "__InstanceDeletionEvent")
             {
-                Console.WriteLine($"Device removed: {fullDeviceId}");
+                Console.WriteLine($"trying to remove: {fullDeviceId}");
+                block.blockUSB(regid);
+                Console.WriteLine($"Uninstalled related device: {deviceId}");
                 if (vidpid != null || vidpid !="" || vidpid != " ")
                 {
                     List<string> relatedDeviceIds = BD.GetRelatedDeviceIds(deviceId);
-                    block.blockUSB(regid);
-                    Console.WriteLine($"Uninstalled related device: {deviceId}");
 
                     if (relatedDeviceIds != null)
                     {

@@ -16,8 +16,9 @@ namespace blocage
             {
             try
             {
-                var parts = hardwareId.Split('\\');
-                string vidpid=parts[1];
+                // block in the form: USB\PID VID
+                //var parts = hardwareId.Split('\\');
+                string vidpid=hardwareId;
                 Blocking.DeleteRegistryValue(registryPath, vidpid);
                 Blocking.DeleteRegistryValue(registryPath2, vidpid);
 
@@ -40,7 +41,7 @@ namespace blocage
                     }
                     else
                     {
-                        Console.WriteLine("Device removed successfully.");
+                        Console.WriteLine("Device removed successfully. In the blocking function");
                     }
                 }
 

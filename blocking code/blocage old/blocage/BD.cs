@@ -15,6 +15,7 @@ namespace blocage
         //static string connectionString = "Host=192.168.1.133;Port=5432;Username=zflub;Password=M#N@d31N;Database=entreprisebd";
         private static string connectionString = "Host=" + ServerConfiguration.IPDB() + ";Port=5432;Username=zflub;Password=M#N@d31N;Database=entreprisebd";
 
+        // chack the blocage status of the machine and call wchich function to use depending on it
         public static void CheckMachineTypeAndPerformAction()
         {
             string machineName = Environment.MachineName;
@@ -51,6 +52,7 @@ namespace blocage
             }
         }
 
+        // check if the device is for the current user and return a boolean
         public static bool CheckDeviceForUser(string deviceId)
         {
             string userName = Environment.UserName;
@@ -89,6 +91,7 @@ namespace blocage
             }
         }
 
+        // check if the class of the device is allowed and is in the table Class in BD
         public static bool CheckDeviceType(string deviceId)
         {
             try
@@ -122,6 +125,7 @@ namespace blocage
             }
         }
 
+        // check if the password given is the same as the password stored for the current user
         public static bool CheckPassword(string password)
         {
             string userName = Environment.UserName;
@@ -152,6 +156,7 @@ namespace blocage
             }
         }
 
+        // return the inf file of the given device
         public static string GetDeviceInfFile(string deviceId)
         {
             try
@@ -185,6 +190,8 @@ namespace blocage
             }
         }
 
+        // Get the Guid and Chemain of the usb classes authorized to the current user and Add them in the regestry
+        // this is the method that allow the classes by registries
         public static void ProcessAuthorizedUsbClasses()
         {
             try
@@ -239,7 +246,7 @@ namespace blocage
                                 string partialPath = fullPath.Replace("HKEY_LOCAL_MACHINE\\", "");
                                 string guid = reader["guid"].ToString();
 
-                                //Blocking.ActivateStartValue(partialPath);
+                                Blocking.ActivateStartValue(partialPath);
 
                                 Console.WriteLine("guid " + guid + "chemin " + partialPath);
 
@@ -255,5 +262,52 @@ namespace blocage
                 Console.WriteLine($"Error processing USB classes: {ex.Message}");
             }
         }
+        
+        // Get the name of drivers that must be added to registries (gpo) with the connected device
+        public static List<string> GetRelatedDeviceIds(string deviceId)
+        {
+            List<string> relatedDeviceIds = new List<string>();
+
+            try
+            {
+                using (var conn = new NpgsqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    // Query to fetch GUID based on deviceId
+                    string query = "SELECT classi_id FROM Device WHERE idDevice = @deviceId";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@deviceId", deviceId);
+                        var classi_id = cmd.ExecuteScalar();
+
+                        // Query to fetch namedrives based on GUID
+                        query = "SELECT nameDrives FROM DriverClass WHERE guid = @guid";
+
+                        using (var cmd2 = new NpgsqlCommand(query, conn))
+                        {
+                            cmd2.Parameters.AddWithValue("@guid", classi_id);
+                            using (var reader = cmd2.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    relatedDeviceIds.Add(reader.GetString(0));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching related device IDs: {ex.Message}");
+            }
+
+            return relatedDeviceIds;
+        }
+
+        // add classes to the gpo
+
     }
 }

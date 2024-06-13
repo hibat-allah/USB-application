@@ -404,6 +404,7 @@ namespace blocage
     public class Blocking
     {
         //private static string connectionString = "Host=ServerIP;Port=5432;Username=zflub;Password=M#N@d31N;Database=entreprisebd";
+        private static List<string> allowedDeviceIdsInstances = new List<string>();
 
         static void Main(string[] args)
         {
@@ -419,57 +420,48 @@ namespace blocage
 
             watcher.Start();
             BD.ProcessAuthorizedUsbClasses();
+
             Console.WriteLine("Surveillance des événements USB. Appuyez sur Enter pour quitter.");
             Console.ReadKey();
-
+            /*
             Console.WriteLine("blocking the same device");
 
             block.blockUSB("USB\\VID_058F&PID_6387");
-            Console.ReadKey();
+            Console.ReadKey();*/
             // Stop monitoring when the user presses Enter
             watcher.Stop();
         }
-
-        public static string ExtractDeviceId(string fullDeviceId)
-        {
-            // Split the device ID using the backslash as a delimiter
-            var parts = fullDeviceId.Split('\\');
-
-            // Join the first two parts with double backslashes
-            if (parts.Length >= 2)
-            {
-                return parts[0] + "\\\\" + parts[1];
-            }
-
-            // If the device ID does not match the expected format, return the original string
-            return fullDeviceId;
-        }
-
-        public static string regId(string fullDeviceId)
-        {
-            // Split the device ID using the backslash as a delimiter
-            var parts = fullDeviceId.Split('\\');
-            return parts[0] + "\\" + parts[1];
-        }
+        // ------------------ Event Functions ----------------------------------
         public static void BlockingUSB(object sender, EventArrivedEventArgs e)
         {
             // Check the event type
+            ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
+            string fullDeviceId = instance["DeviceID"].ToString();
+            string vidpid = ExtractUSBVidPid(fullDeviceId);// vid&pid
+            string deviceId = ExtractDeviceId(fullDeviceId);//bd usb //
+            string regid = regId(fullDeviceId); // reg usb/
+            Console.WriteLine($"\nDevice ID: {fullDeviceId}");
+            Console.WriteLine($"Formatted Device ID: {deviceId}");
+            Console.WriteLine($"VID_PID: {vidpid}");
+            Console.WriteLine($"regid: {regid}\n");
+            string registryPath = @"SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Restrictions\AllowDeviceIDs";
+            string registryPath2 = @"SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\DeviceInstall\Restrictions\AllowDeviceIDs";
             if (e.NewEvent.ClassPath.ClassName == "__InstanceCreationEvent")
             {
                 // Retrieve the device ID from the listener
-                ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
-                string fullDeviceId = instance["DeviceID"].ToString();
-                string vidpid = ExtractUSBVidPid(fullDeviceId);
-                string deviceId = ExtractDeviceId(fullDeviceId);
-                string regid= regId(fullDeviceId);
-                Console.WriteLine($"Device ID: {fullDeviceId}");
-                Console.WriteLine($"Formatted Device ID: {deviceId}");
-                Console.WriteLine($"VID_PID: {vidpid}");
-                Console.WriteLine($"regid: {regid}");
+
+                //if (allowedDeviceIdsInstances.Contains(deviceId) || allowedDeviceIdsInstances.Contains(regid))
+                if(vidpid== null || vidpid=="" || vidpid == " ")
+                {
+                    Console.WriteLine("Device is already allowed, ignoring...");
+                    //ModifyRegistry(registryPath, regid, regid);
+                    //ModifyRegistry(registryPath2, regid, regid);
+                    return;
+                }
+
+
                 bool allowed = IsUSBAllowed(deviceId);
                 Console.WriteLine($"Is USB Allowed: {allowed}");
-                string registryPath= "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceInstall\\Restrictions\\AllowDeviceIDs";
-                string registryPath2 = "SOFTWARE\\Wow6432Node\\Policies\\Microsoft\\Windows\\DeviceInstall\\Restrictions\\AllowDeviceIDs";
 
                 if (allowed)
                 {
@@ -477,15 +469,28 @@ namespace blocage
                     string inf = BD.GetDeviceInfFile(deviceId);
                     if (inf != null)
                     {
-                        string fullInfPath = "C:\\Windows\\inf\\" + inf;
+                        //string fullInfPath = "C:\\Windows\\inf\\" + inf;
+                        //Console.WriteLine($"INF Path: {fullInfPath}");
+                        string fullInfPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "INF", inf);
                         Console.WriteLine($"INF Path: {fullInfPath}");
+
                         ModifyRegistry(registryPath, vidpid, regid);
                         ModifyRegistry(registryPath2, vidpid, regid);
-                        CheckAndAddAdditionalValues(registryPath);
-                        CheckAndAddAdditionalValues(registryPath2);
-                        InstallDriver(deviceId, fullInfPath);
+                        //CheckAndAddAdditionalValues(registryPath);
+                        //CheckAndAddAdditionalValues(registryPath2);
+                        //InstallDriver(deviceId, fullInfPath);
 
-                        }
+                        var relatedDeviceIds = BD.GetRelatedDeviceIds(deviceId);
+                        List<string> relatedDeviceIds2 = relatedDeviceIds;
+                        AllowAdditionalInstances(relatedDeviceIds2, registryPath, registryPath2);
+
+                        // Install drivers for the main device and its related instances
+                        InstallDriver(deviceId, fullInfPath);
+                        //AllowRelatedInstances(relatedDeviceIds2, fullInfPath);
+                        // i want to add the device id to the list
+                        allowedDeviceIdsInstances.AddRange(relatedDeviceIds2);
+
+                    }
                 }
                 else
                 {
@@ -504,8 +509,94 @@ namespace blocage
                     }
                 }
             }
+            else if (e.NewEvent.ClassPath.ClassName == "__InstanceDeletionEvent")
+            {
+                Console.WriteLine($"Device removed: {fullDeviceId}");
+                if (vidpid != null || vidpid !="" || vidpid != " ")
+                {
+                    List<string> relatedDeviceIds = BD.GetRelatedDeviceIds(deviceId);
+                    block.blockUSB(regid);
+                    Console.WriteLine($"Uninstalled related device: {deviceId}");
+
+                    if (relatedDeviceIds != null)
+                    {
+                        //allowedDeviceIdsInstances.Remove(deviceId);
+                        //allowedDeviceIdsInstances.Remove(regid);
+
+                        // Uninstall or block related instances
+                        foreach (string relatedDeviceId in relatedDeviceIds)
+                        {
+                            try
+                            {
+                                allowedDeviceIdsInstances.Remove(relatedDeviceId);
+                                block.blockUSB(relatedDeviceId);
+                                Console.WriteLine($"Uninstalled related device: {relatedDeviceId}");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error uninstalling related device {relatedDeviceId}: {ex.Message}");
+                            }
+                        }
+                    }
+                }
+            }
         }
 
+
+
+        // ------------------ Get IDs of the device in 3 forms -----------------
+        // form : USB\\ VID&PID
+        public static string ExtractDeviceId(string fullDeviceId)
+        {
+            // Split the device ID using the backslash as a delimiter
+            var parts = fullDeviceId.Split('\\');
+
+            // Join the first two parts with double backslashes
+            if (parts.Length >= 2)
+            {
+                return parts[0] + "\\\\" + parts[1];
+            }
+
+            // If the device ID does not match the expected format, return the original string
+            return fullDeviceId;
+        }
+        // form : USB\VID&PID
+        public static string regId(string fullDeviceId)
+        {
+            // Split the device ID using the backslash as a delimiter
+            var parts = fullDeviceId.Split('\\');
+            return parts[0] + "\\" + parts[1];
+        }
+        //form ; VID&PID
+        public static string ExtractUSBVidPid(string deviceId)
+        {
+            string pattern = @"VID_[\da-fA-F]+&PID_[\da-fA-F]+";
+            Match match = Regex.Match(deviceId, pattern);
+            Console.WriteLine("In extract functino this is the vid value:" + match.Value);
+            return match.Success ? match.Value : null;
+        }
+
+
+        
+        //------------------- Registry Modifications ---------------------------
+        static void AllowAdditionalInstances(List<string> relatedDeviceIds, string registryPath, string registryPath2)
+        {
+           
+            foreach (var relatedDeviceId in relatedDeviceIds)
+            {
+                string regId= relatedDeviceId;
+                ModifyRegistry(registryPath, relatedDeviceId, regId);
+                ModifyRegistry(registryPath2, relatedDeviceId, regId);
+            }
+        }
+
+        static void AllowRelatedInstances(List<string> relatedDeviceIds, string fullInfPath)
+        {;
+            foreach (var relatedDeviceId in relatedDeviceIds)
+            {
+                InstallDriver(relatedDeviceId, fullInfPath);
+            }
+        }
         static void CheckAndAddAdditionalValues(string registryPath)
         {
             // Additional string values to check and add if necessary
@@ -538,8 +629,8 @@ namespace blocage
             }
         }
 
-
-        static void ModifyRegistry(string registryPath, string valueName, string valueData)
+        /*
+        public static void ModifyRegistry(string registryPath, string valueName, string valueData)
         {
             try
             {
@@ -570,6 +661,60 @@ namespace blocage
                 Console.WriteLine($"Error modifying registry '{registryPath}': {ex.Message}");
             }
         }
+        */
+        public static void ModifyRegistry(string registryPath, string valueName, string valueData)
+        {
+            try
+            {
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath, true))
+                {
+                    if (key != null)
+                    {
+                        // Check if any existing value has the same data
+                        foreach (var existingValueName in key.GetValueNames())
+                        {
+                            if (key.GetValue(existingValueName)?.ToString() == valueData)
+                            {
+                                Console.WriteLine($"Registry value with data '{valueData}' already exists.");
+                                return; // Exit function if duplicate data found
+                            }
+                        }
+
+                        // Check if the value already exists with a different data
+                        if (key.GetValue(valueName)?.ToString() != null && key.GetValue(valueName)?.ToString() != valueData)
+                        {
+                            Console.WriteLine($"Registry value '{valueName}' already exists with different data.");
+                            return; // Exit function if different data found
+                        }
+
+                        // If no duplicate data or different value with same name, set the value
+                        key.SetValue(valueName, valueData, RegistryValueKind.String);
+                        Console.WriteLine($"Registry value '{valueName}' set with data '{valueData}'.");
+                    }
+                    else
+                    {
+                        // Create the registry key and set the value
+                        using (RegistryKey newKey = Registry.LocalMachine.CreateSubKey(registryPath))
+                        {
+                            if (newKey != null)
+                            {
+                                newKey.SetValue(valueName, valueData, RegistryValueKind.String);
+                                Console.WriteLine($"Registry key '{registryPath}' created and value '{valueName}' set with data '{valueData}'.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Failed to create registry key '{registryPath}'.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error modifying registry '{registryPath}': {ex.Message}");
+            }
+        }
+
 
         public static void DeleteRegistryValue(string registryPath, string valueName)
         {
@@ -603,21 +748,41 @@ namespace blocage
             }
         }
 
-        static string ExtractUSBVidPid(string deviceId)
+        //------------------- Activating the Registries ------------------------
+        public static void ActivateStartValue(string registryPath)
         {
-            string pattern = @"VID_[\da-fA-F]+&PID_[\da-fA-F]+";
-            Match match = Regex.Match(deviceId, pattern);
-
-            return match.Success ? match.Value : "";
+            try
+            {
+                Console.WriteLine("m in activate start value ");
+                // Ouvrir la clé de registre
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath, true))
+                {
+                    // Vérifier si la clé existe
+                    if (key != null)
+                    {
+                        // Modifier la valeur de Start à 3
+                        key.SetValue("Start", 3, RegistryValueKind.DWord);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"La clé de registre '{registryPath}' est introuvable.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Une erreur s'est produite lors de la modification de la clé de registre '{registryPath}': {ex.Message}");
+            }
         }
 
+        //------------------- Install drivers ----------------------------------
         static void InstallDriver(string deviceId, string fullInfPath)
         {
-            const uint INSTALLFLAG_FORCE = 0x00000001;
+            //const uint INSTALLFLAG_FORCE = 0x00000001;
             try
             {
                 bool rebootRequired;
-                bool success = UpdateDriverForPlugAndPlayDevices(IntPtr.Zero, deviceId, fullInfPath, INSTALLFLAG_FORCE, out rebootRequired);
+                bool success = UpdateDriverForPlugAndPlayDevices(IntPtr.Zero, deviceId, fullInfPath, 0, out rebootRequired);
 
                 if (!success)
                 {
@@ -633,22 +798,310 @@ namespace blocage
             }
         }
 
+
+        //------------------- Verify Device if he is allowed -------------------
         public static bool IsUSBAllowed(string deviceId)
         {
-            if (BD.CheckDeviceForUser(deviceId) && BD.CheckDeviceType(deviceId))
+            if (BD.CheckDeviceType(deviceId))
             {
-                Console.Write("Veuillez entrer votre mot de passe : ");
-                string password = "Hello123!"; // For testing purposes; replace with Console.ReadLine();
+                if (BD.CheckDeviceForUser(deviceId) && BD.CheckDeviceType(deviceId))
+                {
+                    Console.Write("Veuillez entrer votre mot de passe : ");
+                    string password = "Hello123!"; // For testing purposes; replace with Console.ReadLine();
 
-                return BD.CheckPassword(password);
+                    return BD.CheckPassword(password);
+                }
+                return false;
+
             }
-            return false;
+            else { 
+                
+                
+                return true; 
+            }
         }
 
         // P/Invoke declarations
         [DllImport("newdev.dll", CharSet = CharSet.Ansi, SetLastError = true)]
         public static extern bool UpdateDriverForPlugAndPlayDevices(IntPtr hwndParent, string HardwareId, string FullInfPath, uint InstallFlags, out bool bRebootRequired);
     }
+
+
+
+
+
+
+
+/*
+namespace AppService
+    {
+        public class UnifiedUsbDeviceListener
+        {
+            public event Action<string> UsbDeviceConnected;
+            public event Action<List<string>> UsbDeviceRemoved;
+
+            private ManagementEventWatcher _insertWatcher;
+            private ManagementEventWatcher _removeWatcher;
+            private ManagementEventWatcher _deviceWatcher;
+            private List<string> _previousDriveLetters;
+            private static List<string> allowedDeviceIdsInstances = new List<string>();
+
+            public UnifiedUsbDeviceListener()
+            {
+                _insertWatcher = new ManagementEventWatcher();
+                _removeWatcher = new ManagementEventWatcher();
+                _deviceWatcher = new ManagementEventWatcher();
+
+                WqlEventQuery insertQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 2");
+                WqlEventQuery removeQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 3");
+                WqlEventQuery deviceQuery = new WqlEventQuery("SELECT * FROM __InstanceOperationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_PnPEntity'");
+
+                _insertWatcher.EventArrived += new EventArrivedEventHandler(DeviceInsertedEvent);
+                _removeWatcher.EventArrived += new EventArrivedEventHandler(DeviceRemovedEvent);
+                _deviceWatcher.EventArrived += new EventArrivedEventHandler(BlockingUSB);
+
+                _insertWatcher.Query = insertQuery;
+                _removeWatcher.Query = removeQuery;
+                _deviceWatcher.Query = deviceQuery;
+
+                _previousDriveLetters = GetUsbDriveLetters();
+            }
+
+            public void StartListening()
+            {
+                _insertWatcher.Start();
+                _removeWatcher.Start();
+                _deviceWatcher.Start();
+            }
+
+            public void StopListening()
+            {
+                _insertWatcher.Stop();
+                _removeWatcher.Stop();
+                _deviceWatcher.Stop();
+            }
+
+            private void DeviceInsertedEvent(object sender, EventArrivedEventArgs e)
+            {
+                var newDriveLetter = GetNewUsbDriveLetter();
+                if (!string.IsNullOrEmpty(newDriveLetter))
+                {
+                    UsbDeviceConnected?.Invoke(newDriveLetter);
+                }
+            }
+
+            private void DeviceRemovedEvent(object sender, EventArrivedEventArgs e)
+            {
+                var removedDriveLetters = GetRemovedUsbDriveLetters();
+                foreach (var drive in removedDriveLetters)
+                {
+                    _previousDriveLetters.Remove(drive);
+                }
+                UsbDeviceRemoved?.Invoke(removedDriveLetters);
+            }
+
+            private string GetNewUsbDriveLetter()
+            {
+                var currentDriveLetters = GetDriveLetters();
+                foreach (var drive in currentDriveLetters)
+                {
+                    if (!_previousDriveLetters.Contains(drive))
+                    {
+                        _previousDriveLetters.Add(drive);
+                        return drive;
+                    }
+                }
+                return null;
+            }
+
+            public List<string> GetRemovedUsbDriveLetters()
+            {
+                var currentDriveLetters = GetDriveLetters();
+                return _previousDriveLetters.Except(currentDriveLetters).ToList();
+            }
+
+            private List<string> GetUsbDriveLetters()
+            {
+                List<string> driveLetters = new List<string>();
+                foreach (var drive in Environment.GetLogicalDrives())
+                {
+                    DriveInfo driveInfo = new DriveInfo(drive);
+                    if (driveInfo.DriveType == DriveType.Removable)
+                    {
+                        driveLetters.Add(drive);
+                    }
+                }
+                return driveLetters;
+            }
+
+            private List<string> GetDriveLetters()
+            {
+                List<string> driveLetters = new List<string>();
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT DeviceID, MediaType FROM Win32_DiskDrive");
+                ManagementObjectCollection drives = searcher.Get();
+
+                foreach (ManagementObject drive in drives)
+                {
+                    string mediaType = drive["MediaType"]?.ToString() ?? string.Empty;
+
+                    if (mediaType.Contains("Removable Media") || mediaType.Contains("External hard disk media"))
+                    {
+                        foreach (ManagementObject partition in drive.GetRelated("Win32_DiskPartition"))
+                        {
+                            foreach (ManagementObject logicalDisk in partition.GetRelated("Win32_LogicalDisk"))
+                            {
+                                driveLetters.Add(logicalDisk["DeviceID"].ToString());
+                            }
+                        }
+                    }
+                }
+                return driveLetters;
+            }
+
+            public static void BlockingUSB(object sender, EventArrivedEventArgs e)
+            {
+                ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
+                string fullDeviceId = instance["DeviceID"].ToString();
+                string vidpid = ExtractUSBVidPid(fullDeviceId);
+                string deviceId = ExtractDeviceId(fullDeviceId);
+                string regid = regId(fullDeviceId);
+
+                Console.WriteLine($"Device ID: {fullDeviceId}");
+                Console.WriteLine($"Formatted Device ID: {deviceId}");
+                Console.WriteLine($"VID_PID: {vidpid}");
+                Console.WriteLine($"regid: {regid}");
+
+                string registryPath = @"SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Restrictions\AllowDeviceIDs";
+                string registryPath2 = @"SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\DeviceInstall\Restrictions\AllowDeviceIDs";
+
+                if (e.NewEvent.ClassPath.ClassName == "__InstanceCreationEvent")
+                {
+                    if (allowedDeviceIdsInstances.Contains(deviceId) || allowedDeviceIdsInstances.Contains(regid))
+                    {
+                        Console.WriteLine("Device is already allowed, ignoring...");
+                        ModifyRegistry(registryPath, vidpid, regid);
+                        ModifyRegistry(registryPath2, vidpid, regid);
+                        return;
+                    }
+
+                    bool allowed = IsUSBAllowed(deviceId);
+                    Console.WriteLine($"Is USB Allowed: {allowed}");
+
+                    if (allowed)
+                    {
+                        string inf = BD.GetDeviceInfFile(deviceId);
+                        if (inf != null)
+                        {
+                            string fullInfPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "INF", inf);
+                            Console.WriteLine($"INF Path: {fullInfPath}");
+
+                            ModifyRegistry(registryPath, vidpid, regid);
+                            ModifyRegistry(registryPath2, vidpid, regid);
+
+                            var relatedDeviceIds = BD.GetRelatedDeviceIds(deviceId);
+                            AllowAdditionalInstances(relatedDeviceIds, registryPath, registryPath2);
+                            InstallDriver(deviceId, fullInfPath);
+                            AllowRelatedInstances(relatedDeviceIds, fullInfPath);
+                            allowedDeviceIdsInstances.AddRange(relatedDeviceIds);
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            block.blockUSB(regid);
+                            Console.WriteLine("Device uninstalled successfully.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error: {ex.Message}");
+                        }
+                    }
+                }
+                else if (e.NewEvent.ClassPath.ClassName == "__InstanceDeletionEvent")
+                {
+                    Console.WriteLine($"Device removed: {fullDeviceId}");
+
+                    if (allowedDeviceIdsInstances.Contains(deviceId))
+                    {
+                        allowedDeviceIdsInstances.Remove(deviceId);
+                        allowedDeviceIdsInstances.Remove(regid);
+                        List<string> relatedDeviceIds = BD.GetRelatedDeviceIds(deviceId);
+                        foreach (string relatedDeviceId in relatedDeviceIds)
+                        {
+                            allowedDeviceIdsInstances.Remove(relatedDeviceId);
+                        }
+
+                        foreach (string relatedDeviceId in relatedDeviceIds)
+                        {
+                            try
+                            {
+                                block.blockUSB(relatedDeviceId);
+                                Console.WriteLine($"Uninstalled related device: {relatedDeviceId}");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error uninstalling related device {relatedDeviceId}: {ex.Message}");
+                            }
+                        }
+                    }
+                }
+            }
+
+            public static string ExtractDeviceId(string fullDeviceId)
+            {
+                var parts = fullDeviceId.Split('\\');
+                return parts.Length >= 2 ? parts[0] + "\\\\" + parts[1] : fullDeviceId;
+            }
+
+            public static string regId(string fullDeviceId)
+            {
+                var parts = fullDeviceId.Split('\\');
+                return parts[0] + "\\" + parts[1];
+            }
+
+            public static string ExtractUSBVidPid(string deviceId)
+            {
+                string pattern = @"VID_[\da-fA-F]+&PID_[\da-fA-F]+";
+                Match match = Regex.Match(deviceId, pattern);
+                return match.Success ? match.Value : "";
+            }
+
+            static void AllowAdditionalInstances(List<string> relatedDeviceIds, string registryPath, string registryPath2)
+            {
+                foreach (var relatedDeviceId in relatedDeviceIds)
+                {
+                    string regId = relatedDeviceId;
+                    ModifyRegistry(registryPath, relatedDeviceId, regId);
+                    ModifyRegistry(registryPath2, relatedDeviceId, regId);
+                }
+            }
+
+            static void AllowRelatedInstances(List<string> relatedDeviceIds, string fullInfPath)
+            {
+                foreach (var relatedDeviceId in relatedDeviceIds)
+                {
+                    InstallDriver(relatedDeviceId, fullInfPath);
+                }
+            }
+
+            public static void ModifyRegistry(string registryPath, string valueName, string valueData)
+            {
+                try
+                {
+                    using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath, true))
+                    {
+                        if (key != null)
+                        {
+                            key.SetValue(valueName, valueData, RegistryValueKind.String);
+                        }
+                        else
+                        {
+                            Console.WriteLine();    }
+                    }
+                }} } }
+*/
+
 
 
 }
