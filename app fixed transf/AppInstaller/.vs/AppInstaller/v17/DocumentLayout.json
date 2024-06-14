@@ -1,17 +1,24 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\user\\source\\repos\\AppInstaller\\",
+  "WorkspaceRootPath": "D:\\USB-application\\app fixed transf\\AppInstaller\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|c:\\users\\user\\source\\repos\\appinstaller\\appinstaller\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|solutionrelative:appinstaller\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|c:\\users\\user\\source\\repos\\appinstaller\\appinstaller\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "AbsoluteMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|D:\\USB-application\\app fixed transf\\AppInstaller\\appinstaller\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
       "RelativeMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|solutionrelative:appinstaller\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|c:\\users\\user\\source\\repos\\appinstaller\\appinstaller\\app.manifest||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "AbsoluteMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|d:\\usb-application\\app fixed transf\\appinstaller\\appinstaller\\app1.manifest||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|solutionrelative:appinstaller\\app1.manifest||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|D:\\USB-application\\app fixed transf\\AppInstaller\\appinstaller\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|solutionrelative:appinstaller\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ASUS\\AppData\\Local\\Temp\\.vsdbgsrc\\c441050d46fbea2cb9d3a4ecc2d5c87692334729df159b5b3587af71ce560a71\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|D:\\USB-application\\app fixed transf\\AppInstaller\\appinstaller\\app.manifest||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
       "RelativeMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|solutionrelative:appinstaller\\app.manifest||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     }
   ],
@@ -22,28 +29,51 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "app.manifest",
-              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\app.manifest",
-              "RelativeDocumentMoniker": "AppInstaller\\app.manifest",
-              "ToolTip": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\app.manifest",
-              "RelativeToolTip": "AppInstaller\\app.manifest",
+              "DocumentIndex": 1,
+              "Title": "app1.manifest",
+              "DocumentMoniker": "D:\\USB-application\\app fixed transf\\AppInstaller\\AppInstaller\\app1.manifest",
+              "RelativeDocumentMoniker": "AppInstaller\\app1.manifest",
+              "ToolTip": "D:\\USB-application\\app fixed transf\\AppInstaller\\AppInstaller\\app1.manifest",
+              "RelativeToolTip": "AppInstaller\\app1.manifest",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAA8AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001203|",
-              "WhenOpened": "2024-06-11T14:37:16.475Z",
+              "WhenOpened": "2024-06-14T20:07:40.982Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\.vsdbgsrc\\c441050d46fbea2cb9d3a4ecc2d5c87692334729df159b5b3587af71ce560a71\\Program.cs",
+              "ToolTip": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\.vsdbgsrc\\c441050d46fbea2cb9d3a4ecc2d5c87692334729df159b5b3587af71ce560a71\\Program.cs",
+              "ViewState": "AQIAABIAAAAAAAAAAAAAABwAAAACAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-14T19:38:27.962Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "app.manifest",
+              "DocumentMoniker": "D:\\USB-application\\app fixed transf\\AppInstaller\\AppInstaller\\app.manifest",
+              "RelativeDocumentMoniker": "AppInstaller\\app.manifest",
+              "ToolTip": "D:\\USB-application\\app fixed transf\\AppInstaller\\AppInstaller\\app.manifest",
+              "RelativeToolTip": "AppInstaller\\app.manifest",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAA8AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001203|",
+              "WhenOpened": "2024-06-11T14:37:16.475Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "App.config",
-              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\App.config",
+              "DocumentMoniker": "D:\\USB-application\\app fixed transf\\AppInstaller\\AppInstaller\\App.config",
               "RelativeDocumentMoniker": "AppInstaller\\App.config",
-              "ToolTip": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\App.config",
+              "ToolTip": "D:\\USB-application\\app fixed transf\\AppInstaller\\AppInstaller\\App.config",
               "RelativeToolTip": "AppInstaller\\App.config",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAQAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
@@ -52,13 +82,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\Program.cs",
+              "DocumentMoniker": "D:\\USB-application\\app fixed transf\\AppInstaller\\AppInstaller\\Program.cs",
               "RelativeDocumentMoniker": "AppInstaller\\Program.cs",
-              "ToolTip": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\Program.cs",
+              "ToolTip": "D:\\USB-application\\app fixed transf\\AppInstaller\\AppInstaller\\Program.cs",
               "RelativeToolTip": "AppInstaller\\Program.cs",
-              "ViewState": "AQIAADcAAAAAAAAAAAAkwEcAAAAfAAAA",
+              "ViewState": "AQIAAHQAAAAAAAAAAAAuwA0AAAAUAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-05T19:29:07.65Z",
               "EditorCaption": ""

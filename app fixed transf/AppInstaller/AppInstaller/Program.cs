@@ -21,7 +21,7 @@ namespace AppInstaller
             //AddShortcutToStartup(appPath);
 
             // Add registry entry
-            //AddRegistryEntry(appName, appPath);
+            AddRegistryEntry(appName, appPath);
             LaunchApplication(appPath);
             Console.WriteLine("App lunched ...");
             DisableAutorun();
@@ -59,19 +59,69 @@ namespace AppInstaller
         }
         static void DisableAutorun()
         {
-            RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer", true)
-                ?? Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer");
-            key?.SetValue("NoDriveTypeAutoRun", 255, RegistryValueKind.DWord);
-            key?.Close();
+            string key = @"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer";
+            ModifyRegistry(key, "DisableAutoplay", "255");
         }
 
         static void DisableAutoplay()
         {
-            RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers", true)
-                ?? Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers");
-            key?.SetValue("DisableAutoplay", 1, RegistryValueKind.DWord);
-            key?.Close();
+            string key = @"Software\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers";
+            ModifyRegistry(key, "DisableAutoplay", "1");
         }
+        public static void ModifyRegistry(string registryPath, string valueName, string valueData)
+        {
+            try
+            {
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath, true))
+                {
+                    if (key != null)
+                    {
+                        // Check if any existing value has the same data
+                        foreach (var existingValueName in key.GetValueNames())
+                        {
+                            if (key.GetValue(existingValueName)?.ToString() == valueData)
+                            {
+                                Console.WriteLine($"Registry value with data '{valueData}' already exists.");
+                                return; // Exit function if duplicate data found
+                            }
+                        }
+
+                        // Check if the value already exists with a different data
+                        if (key.GetValue(valueName)?.ToString() != null && key.GetValue(valueName)?.ToString() != valueData)
+                        {
+                            Console.WriteLine($"Registry value '{valueName}' already exists with different data.");
+                            return; // Exit function if different data found
+                        }
+
+                        // If no duplicate data or different value with same name, set the value
+                        key.SetValue(valueName, valueData, RegistryValueKind.String);
+                        Console.WriteLine($"Registry value '{valueName}' set with data '{valueData}'.");
+                    }
+                    else
+                    {
+                        // Create the registry key and set the value
+                        using (RegistryKey newKey = Registry.LocalMachine.CreateSubKey(registryPath))
+                        {
+                            if (newKey != null)
+                            {
+                                newKey.SetValue(valueName, valueData, RegistryValueKind.String);
+                                Console.WriteLine($"Registry key '{registryPath}' created and value '{valueName}' set with data '{valueData}'.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Failed to create registry key '{registryPath}'.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error modifying registry '{registryPath}': {ex.Message}");
+            }
+        }
+
+
     }
 
 }
