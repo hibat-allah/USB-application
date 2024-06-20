@@ -92,7 +92,8 @@ namespace AppService
             string vidpid = Blocking.ExtractUSBVidPid(fullDeviceId);// vid&pid
             string deviceId = Blocking.ExtractDeviceId(fullDeviceId);//bd usb //
             string regid = Blocking.regId(fullDeviceId); // reg usb/
-            Log(vidpid + " bla " + deviceId + " bla "+regid);
+            string driveLetter = parts[1];
+            Log(vidpid + " bla " + deviceId + " bla "+regid+"driverLetter "+driveLetter);
             if (vidpid == null || vidpid == "" || vidpid == " ")
             {
                 Log("Device is already allowed, ignoring...");
@@ -119,17 +120,16 @@ namespace AppService
                     List<string> relatedDeviceIds2 = relatedDeviceIds;
                     Blocking.AllowAdditionalInstances(relatedDeviceIds2, registryPath, registryPath2);
 
-                    Blocking.InstallDriver(deviceId, fullInfPath);
+                    Blocking.InstallDevice(regid, fullInfPath);
                     allowedDeviceIdsInstances.AddRange(relatedDeviceIds2);
 
                     // verify if he is a storage device to lunch the application
-                    string driveLetter = parts[1];
 
-                    if (driveLetter != "null")
+                    if (driveLetter != null)
                     {
                         Log($"USB Device Connected before app call: {driveLetter}");
 
-                        Process applicationProcess = StartApplication(deviceId, driveLetter);
+                        Process applicationProcess = StartApplication(regid, driveLetter);
                         //Process.Start("E:\\Application\\NewApp\\bin\\Debug\\NewApp.exe", $"{deviceId} {driverletter}");
                         usbdeviceProcesses[driveLetter] = applicationProcess;
                     }
@@ -142,11 +142,11 @@ namespace AppService
                 // Blocking logic here
                 try
                 {
-                    Blocking.DeleteRegistryValue(registryPath, vidpid);
-                    Blocking.DeleteRegistryValue(registryPath2, vidpid);
+                    Blocking.DeleteRegistryValue(registryPath, regid);
+                    Blocking.DeleteRegistryValue(registryPath2, regid);
 
                     // here blocking
-                    Blocking.UninstallDriver(deviceId,null);
+                    Blocking.UninstallDevice(regid);
 
                     Console.WriteLine("Device uninstalled successfully.");
                 }
@@ -194,7 +194,7 @@ namespace AppService
                 string driveLetter = parts[1];
                 Log($"USB Device Removed {driveLetter}");
 
-                if (driveLetter != "null")
+                if (driveLetter != null)
                 {
                     StopApplication(apppath, driveLetter);
                 }
@@ -216,10 +216,10 @@ namespace AppService
                             try
                             {
                                 allowedDeviceIdsInstances.Remove(relatedDeviceId);
-                                Blocking.DeleteRegistryValue(registryPath, vidpid);
-                                Blocking.DeleteRegistryValue(registryPath2, vidpid);
+                                Blocking.DeleteRegistryValue(registryPath, regid);
+                                Blocking.DeleteRegistryValue(registryPath2, regid);
                                 // uninstalling the device
-
+                                Blocking.UninstallDevice(regid);
 
                             }
                             catch (Exception ex)

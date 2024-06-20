@@ -1,18 +1,48 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace AppService
 {
     public class Blocking
     {
+        static string logFilePath = @"C:\Users\user\Documents\blockingLogs.txt"; // Update with an appropriate path
+        private static Dictionary<string, DeviceInfo> uninstallDataDictionary = new Dictionary<string, DeviceInfo>();
+        // -------- importing DLLs ---------------------------------------------
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct SP_DEVINFO_DATA
+        {
+            public int cbSize;
+            public Guid ClassGuid;
+            public int DevInst;
+            public IntPtr Reserved;
+        }
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct DeviceInfo
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string deviceId;
+            public SP_DEVINFO_DATA deviceInfoData;
+            public IntPtr deviceInfoSet;
+        }
 
+        [DllImport("DeviceDriverManager.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool InstallDriver(string deviceId, string infPath, out DeviceInfo uninstallData);
+
+        [DllImport("DeviceDriverManager.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool GetDeviceInfo(string deviceId, out DeviceInfo deviceInfo);
+
+        [DllImport("DeviceDriverManager.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool UninstallDriver(string deviceId, ref DeviceInfo uninstallData);
 
 
 
@@ -62,46 +92,8 @@ namespace AppService
             }
         }
 
-        public static void AllowRelatedInstances(List<string> relatedDeviceIds, string fullInfPath)
-        {
-            ;
-            foreach (var relatedDeviceId in relatedDeviceIds)
-            {
-                InstallDriver(relatedDeviceId, fullInfPath);
-            }
-        }
-        public static void CheckAndAddAdditionalValues(string registryPath)
-        {
-            // Additional string values to check and add if necessary
-            string[] additionalValues = { "STORAGE\\VOLUME", "USBSTOR\\DISK" };
-
-            try
-            {
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath, true))
-                {
-                    if (key != null)
-                    {
-                        foreach (string additionalValue in additionalValues)
-                        {
-                            if (key.GetValue(additionalValue) == null)
-                            {
-                                key.SetValue(additionalValue, additionalValue, RegistryValueKind.String);
-                                Console.WriteLine($"Added additional value '{additionalValue}' to registry key '{registryPath}'.");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Registry key '{registryPath}' not found.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error checking and adding additional values for registry '{registryPath}': {ex.Message}");
-            }
-        }
-
+       
+     
         public static void ModifyRegistry(string registryPath, string valueName, string valueData)
         {
             try
@@ -218,35 +210,71 @@ namespace AppService
 
 
         //------------------- Install drivers ----------------------------------
-        public static void InstallDriver(string deviceId, string fullInfPath)
+        public static void InstallDevice(string deviceId, string fullInfPath)
         {
-            //const uint INSTALLFLAG_FORCE = 0x00000001;
-            /* try
-             {
-                 bool rebootRequired;
-                 bool success = UpdateDriverForPlugAndPlayDevices(IntPtr.Zero, deviceId, fullInfPath, 0, out rebootRequired);
+            DeviceInfo uninstallData;
+            if (InstallDriver(deviceId, fullInfPath, out uninstallData))
+            {
+                Log("Driver installed successfully.");
+                Log("UninstallData:" + uninstallData);
+                Log($"DeviceId: {uninstallData.deviceId}");
+                uninstallDataDictionary[deviceId] = uninstallData;
 
-                 if (!success)
-                 {
-                     int errorCode = Marshal.GetLastWin32Error();
-                     throw new Exception($"UpdateDriverForPlugAndPlayDevices failed with error code: {errorCode} ({errorCode:X})");
-                 }
-
-                 Console.WriteLine(rebootRequired ? "Reboot required after driver update." : "Driver updated successfully without requiring a reboot.");
-             }
-             catch (Exception ex)
-             {
-                 Console.WriteLine($"Driver installation error: {ex.Message}");
-             }*/
-            //DriverInstaller.InstallDriver(deviceId,fullInfPath);
-           
+            }
+            else
+            {
+                Log("Driver installation failed.");
+            }
         }
 
 
 
         //------------------- Uninstall drivers ----------------------------------
-        public static void UninstallDriver(string deviceId, string fullInfPath)
-        { }
+        public static void UninstallDevice(string deviceId)
+        {
+            /*if (uninstallDataDictionary.TryGetValue(deviceId,out DeviceInfo uninstallData))
+            {
+                if (UninstallDriver(deviceId, ref uninstallData))
+                {
+                    uninstallDataDictionary.Remove(deviceId);
+                    Log("Driver uninstalled successfully.");
+                }
+                else
+                {
+                    Log("Driver uninstallation failed.");
+                }
+            }
+            else
+            {
+                Log("No uninstall Data found");
+
+            }*/
+
+            if (!uninstallDataDictionary.ContainsKey(deviceId))
+            {
+                if (GetDeviceInfo(deviceId, out DeviceInfo deviceinfo))
+                {
+                    uninstallDataDictionary[deviceId] = deviceinfo;
+                }
+                else
+                {
+                    Log("there is no device info data to uinstall the device!");
+                    return;
+                }
+            }
+            DeviceInfo uninstallData = uninstallDataDictionary[deviceId];
+            if (UninstallDriver(deviceId, ref uninstallData))
+            {
+                uninstallDataDictionary.Remove(deviceId);
+                Log("Driver uninstalled successfully.");
+            }
+            else
+            {
+                Log("Driver uninstallation failed.");
+            }
+
+
+        }
 
 
 
@@ -259,9 +287,24 @@ namespace AppService
                 if (BD.CheckDeviceForUser(deviceId) && BD.CheckDeviceType(deviceId))
                 {
                     Console.Write("Veuillez entrer votre mot de passe : ");
-                    string password = "Hello123!"; // For testing purposes; replace with Console.ReadLine();
+                    //string password = "Hello123!"; // For testing purposes; replace with Console.ReadLine();
+                    using (var passwordForm = new password())
+                    {
+                        if (passwordForm.ShowDialog() == DialogResult.OK)
+                        {
+                            string password = passwordForm.Password;
+                            return BD.CheckPassword(password);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
 
-                    return BD.CheckPassword(password);
+
+
+
+                    //return BD.CheckPassword(password);
                 }
                 return false;
 
@@ -273,9 +316,19 @@ namespace AppService
                 return true;
             }
         }
-    
-    
-    
-    
+
+
+        public static void Log(string message)
+        {
+            //lock (lockObj)
+            //{
+            using (StreamWriter writer = new StreamWriter(logFilePath, true))
+            {
+                writer.WriteLine(message);
+            }
+            //}
+        }
+
+
     }
 }

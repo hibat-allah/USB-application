@@ -1,0 +1,70 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\user\\source\\repos\\AppInstaller\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|C:\\Users\\user\\source\\repos\\AppInstaller\\appinstaller\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|solutionrelative:appinstaller\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|c:\\users\\user\\source\\repos\\appinstaller\\appinstaller\\app.manifest||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|solutionrelative:appinstaller\\app.manifest||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|C:\\Users\\user\\source\\repos\\AppInstaller\\appinstaller\\properties\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{38D827F2-EBB7-41B2-9644-FB9C28995CA4}|AppInstaller\\AppInstaller.csproj|solutionrelative:appinstaller\\properties\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "app.manifest",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\app.manifest",
+              "RelativeDocumentMoniker": "AppInstaller\\app.manifest",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\app.manifest",
+              "RelativeToolTip": "AppInstaller\\app.manifest",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAnAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001203|",
+              "WhenOpened": "2024-06-20T17:26:07.182Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AssemblyInfo.cs",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\Properties\\AssemblyInfo.cs",
+              "RelativeDocumentMoniker": "AppInstaller\\Properties\\AssemblyInfo.cs",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\Properties\\AssemblyInfo.cs",
+              "RelativeToolTip": "AppInstaller\\Properties\\AssemblyInfo.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-20T17:25:06.243Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\Program.cs",
+              "RelativeDocumentMoniker": "AppInstaller\\Program.cs",
+              "ToolTip": "C:\\Users\\user\\source\\repos\\AppInstaller\\AppInstaller\\Program.cs",
+              "RelativeToolTip": "AppInstaller\\Program.cs",
+              "ViewState": "AQIAADsAAAAAAAAAAIA0wEUAAACEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-05T19:29:07.65Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
