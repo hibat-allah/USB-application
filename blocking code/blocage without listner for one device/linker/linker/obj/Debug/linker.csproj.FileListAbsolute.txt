@@ -1,0 +1,7 @@
+C:\Users\ASUS\source\repos\linker\linker\obj\Debug\linker.csproj.AssemblyReference.cache
+C:\Users\ASUS\source\repos\linker\linker\obj\Debug\linker.csproj.CoreCompileInputs.cache
+C:\Users\ASUS\source\repos\linker\linker\bin\Debug\linker.exe.config
+C:\Users\ASUS\source\repos\linker\linker\bin\Debug\linker.exe
+C:\Users\ASUS\source\repos\linker\linker\bin\Debug\linker.pdb
+C:\Users\ASUS\source\repos\linker\linker\obj\Debug\linker.exe
+C:\Users\ASUS\source\repos\linker\linker\obj\Debug\linker.pdb
