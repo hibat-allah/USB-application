@@ -490,6 +490,9 @@ namespace blocage
                         // i want to add the device id to the list
                         allowedDeviceIdsInstances.AddRange(relatedDeviceIds2);
 
+                        // lunch the application
+                        // function call (another .cs file which the lunching process is there)
+
                     }
                 }
                 else
