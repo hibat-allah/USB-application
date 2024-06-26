@@ -10,15 +10,7 @@ struct DeviceInfo {
     SP_DEVINFO_DATA deviceInfoData;
     HDEVINFO deviceInfoSet;
 };
-/*
-extern "C" {
 
-
-    extern "C" __declspec(dllexport) bool InstallDriver(const wchar_t* deviceId, const wchar_t* infPath, DeviceInfo* uninstallData);
-    extern "C" __declspec(dllexport) bool GetDeviceInfo(const wchar_t* deviceId, DeviceInfo* deviceInfo);
-    extern "C" __declspec(dllexport) bool UninstallDriver(const wchar_t* deviceId, const DeviceInfo* uninstallData);
-
-}*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +19,8 @@ extern "C" {
     __declspec(dllexport) bool InstallDriver(const wchar_t* deviceId, const wchar_t* infPath, DeviceInfo* uninstallData);
     __declspec(dllexport) bool GetDeviceInfo(const wchar_t* deviceId, DeviceInfo* deviceInfo);
     __declspec(dllexport) bool UninstallDriver(const wchar_t* deviceId, DeviceInfo* uninstallData);
+    __declspec(dllexport) const wchar_t* GetParentHardwareID(const wchar_t* instanceId); // Function declaration with correct return type
+
 
 #ifdef __cplusplus
 }
