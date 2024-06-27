@@ -119,80 +119,11 @@ extern "C" __declspec(dllexport) bool UninstallDriver(const wchar_t* deviceId, D
     SetupDiDestroyDeviceInfoList(deviceInfo.deviceInfoSet);
     return true;
 }
-/*
-extern "C" __declspec(dllexport) std::wstring GetParentHardwareID(const wchar_t* instanceId) {
-    HDEVINFO deviceInfoSet = SetupDiGetClassDevs(&GUID_DEVINTERFACE_DISK, NULL, NULL, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
-    if (deviceInfoSet == INVALID_HANDLE_VALUE) {
-        std::cerr << "SetupDiGetClassDevs failed." << std::endl;
-        return L"";
-    }
-
-    SP_DEVINFO_DATA deviceInfoData;
-    deviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
-
-    std::wstring instanceIdW(instanceId);
-    std::string instanceIdStr(instanceIdW.begin(), instanceIdW.end());
-
-    for (DWORD i = 0; SetupDiEnumDeviceInfo(deviceInfoSet, i, &deviceInfoData); ++i) {
-        // Get the device ID
-        TCHAR deviceID[MAX_DEVICE_ID_LEN];
-        if (CM_Get_Device_ID(deviceInfoData.DevInst, deviceID, MAX_DEVICE_ID_LEN, 0) != CR_SUCCESS) {
-            continue;
-        }
-
-        std::wstring deviceIDW(deviceID);
-        std::string deviceIDStr(deviceIDW.begin(), deviceIDW.end());
-
-        if (deviceIDStr == instanceIdStr) {
-            DEVINST parentDevInst;
-            if (CM_Get_Parent(&parentDevInst, deviceInfoData.DevInst, 0) != CR_SUCCESS) {
-                std::cerr << "CM_Get_Parent failed." << std::endl;
-                SetupDiDestroyDeviceInfoList(deviceInfoSet);
-                return L"";
-            }
-
-            TCHAR parentDeviceID[MAX_DEVICE_ID_LEN];
-            if (CM_Get_Device_ID(parentDevInst, parentDeviceID, MAX_DEVICE_ID_LEN, 0) != CR_SUCCESS) {
-                std::cerr << "CM_Get_Device_ID failed." << std::endl;
-                SetupDiDestroyDeviceInfoList(deviceInfoSet);
-                return L"";
-            }
-
-            std::wstring parentDeviceIDW(parentDeviceID);
-            std::string parentDeviceIDStr(parentDeviceIDW.begin(), parentDeviceIDW.end());
-
-            // Find the USB\VID_xxx&PID_yyyy part of the parent device ID
-            size_t vidPos = parentDeviceIDStr.find("USB\\VID_");
-            if (vidPos != std::string::npos) {
-                size_t pidPos = parentDeviceIDStr.find("&PID_", vidPos);
-                if (pidPos != std::string::npos) {
-                    size_t endPos = parentDeviceIDStr.find('&', pidPos + 5);
-                    if (endPos != std::string::npos) {
-                        SetupDiDestroyDeviceInfoList(deviceInfoSet);
-                        return std::wstring(parentDeviceIDStr.begin() + vidPos, parentDeviceIDStr.begin() + endPos);
-                    }
-                    else {
-                        SetupDiDestroyDeviceInfoList(deviceInfoSet);
-                        return std::wstring(parentDeviceIDStr.begin() + vidPos, parentDeviceIDStr.end());
-                    }
-                }
-            }
-
-            std::cerr << "Parent DeviceID does not contain USB\\VID_ and PID_" << std::endl;
-            SetupDiDestroyDeviceInfoList(deviceInfoSet);
-            return L"";
-        }
-    }
-
-    SetupDiDestroyDeviceInfoList(deviceInfoSet);
-    return L"";
-}
-*/
 
 extern "C" __declspec(dllexport) const wchar_t* GetParentHardwareID(const wchar_t* instanceId) {
     static std::wstring result; // static to persist after function return
 
-    HDEVINFO deviceInfoSet = SetupDiGetClassDevs(&GUID_DEVINTERFACE_DISK, NULL, NULL, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
+    HDEVINFO deviceInfoSet = SetupDiGetClassDevs(NULL, NULL, NULL, DIGCF_PRESENT | DIGCF_ALLCLASSES);
     if (deviceInfoSet == INVALID_HANDLE_VALUE) {
         std::cerr << "SetupDiGetClassDevs failed." << std::endl;
         return L"";
@@ -234,8 +165,7 @@ extern "C" __declspec(dllexport) const wchar_t* GetParentHardwareID(const wchar_
                         result = parentDeviceIDStr.substr(vidPos, endPos - vidPos);
                         SetupDiDestroyDeviceInfoList(deviceInfoSet);
                         return result.c_str();
-                    }
-                    else {
+                    } else {
                         result = parentDeviceIDStr.substr(vidPos);
                         SetupDiDestroyDeviceInfoList(deviceInfoSet);
                         return result.c_str();
@@ -249,7 +179,7 @@ extern "C" __declspec(dllexport) const wchar_t* GetParentHardwareID(const wchar_
         }
     }
 
+    std::cerr << "Device not found." << std::endl;
     SetupDiDestroyDeviceInfoList(deviceInfoSet);
     return L"";
 }
-
