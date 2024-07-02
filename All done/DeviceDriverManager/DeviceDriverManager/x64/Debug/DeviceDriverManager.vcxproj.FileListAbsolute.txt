@@ -1,2 +1,0 @@
-C:\Users\user\Desktop\new\DeviceDriverManager\DeviceDriverManager\x64\Debug\DeviceDriverManager.dll
-C:\Users\ASUS\source\repos\DeviceDriverManager\DeviceDriverManager\x64\Debug\DeviceDriverManager.dll
