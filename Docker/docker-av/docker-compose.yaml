@@ -1,0 +1,24 @@
+services:
+  clamav:
+    image: mkodockx/docker-clamav:alpine
+    container_name: clamav
+    ports:
+      - "3310:3310"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "3310"]
+      interval: 10s
+      timeout: 10s
+      retries: 50
+      start_period: 5s
+
+  restful-api:
+    build:
+      context: ./restful-api
+    container_name: restful-api
+    ports:
+      - "3000:3000"
+    depends_on:
+      clamav:
+        condition: service_healthy
+    restart: unless-stopped

@@ -1,0 +1,69 @@
+2024/06/12 15:11:18 [notice] 7892#6084: signal process started
+2024/06/12 15:11:18 [error] 7892#6084: CreateFile() "C:\nginx-1.26.1/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2024/06/12 16:01:39 [emerg] 60#2064: cannot load certificate "C:\nginx-1.26.1/conf/certs/server.crt": BIO_new_file() failed (SSL: error:80000003:system library::No such process:calling fopen(C:\nginx-1.26.1/conf/certs/server.crt, r) error:10000080:BIO routines::no such file)
+2024/06/12 16:01:44 [emerg] 6744#6004: cannot load certificate "C:\nginx-1.26.1/conf/certs/server.crt": BIO_new_file() failed (SSL: error:80000003:system library::No such process:calling fopen(C:\nginx-1.26.1/conf/certs/server.crt, r) error:10000080:BIO routines::no such file)
+2024/06/12 16:01:56 [notice] 4104#3684: signal process started
+2024/06/12 16:02:00 [notice] 6200#4776: signal process started
+2024/06/12 16:02:00 [error] 6200#4776: CreateFile() "C:\nginx-1.26.1/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2024/06/13 08:48:54 [notice] 3356#4860: signal process started
+2024/06/13 08:48:54 [error] 3356#4860: OpenEvent("Global\ngx_reload_3476") failed (2: The system cannot find the file specified)
+2024/06/13 10:24:17 [notice] 3440#5352: signal process started
+2024/06/13 10:28:16 [notice] 4912#4764: signal process started
+2024/06/13 11:39:09 [notice] 3684#7716: signal process started
+2024/06/13 11:40:57 [notice] 7248#1724: signal process started
+2024/06/13 13:52:22 [notice] 6792#6488: signal process started
+2024/06/13 13:52:22 [error] 6792#6488: OpenEvent("Global\ngx_reload_2176") failed (2: The system cannot find the file specified)
+2024/06/13 13:52:37 [notice] 2760#6772: signal process started
+2024/06/13 13:52:37 [error] 2760#6772: OpenEvent("Global\ngx_reload_2176") failed (2: The system cannot find the file specified)
+2024/06/13 13:52:57 [alert] 448#8: the event "ngx_master_448" was not signaled for 5s
+2024/06/13 13:53:22 [alert] 4076#1832: the event "ngx_master_4076" was not signaled for 5s
+2024/06/13 13:54:52 [notice] 6804#6688: signal process started
+2024/06/13 13:54:52 [error] 6804#6688: OpenEvent("Global\ngx_reload_4076") failed (2: The system cannot find the file specified)
+2024/06/13 13:55:04 [emerg] 1288#5724: cannot load certificate key "C:\nginx-1.26.1/conf/certs/server.key": PEM_read_bio_PrivateKey() failed (SSL: error:1C800064:Provider routines::bad decrypt error:11800074:PKCS12 routines::pkcs12 cipherfinal error:empty password error:1C800064:Provider routines::bad decrypt error:11800074:PKCS12 routines::pkcs12 cipherfinal error:empty password)
+2024/06/13 13:55:18 [alert] 4336#2568: the event "ngx_master_4336" was not signaled for 5s
+2024/06/13 13:57:18 [notice] 5440#1896: signal process started
+2024/06/13 13:57:18 [error] 5440#1896: OpenEvent("Global\ngx_reload_4336") failed (2: The system cannot find the file specified)
+2024/06/13 13:57:37 [alert] 7948#2340: the event "ngx_master_7948" was not signaled for 5s
+2024/06/13 13:58:41 [emerg] 5172#7984: cannot load certificate key "C:\nginx-1.26.1/conf/certs/server.key": PEM_read_bio_PrivateKey() failed (SSL: error:1C800064:Provider routines::bad decrypt error:11800074:PKCS12 routines::pkcs12 cipherfinal error:empty password error:1C800064:Provider routines::bad decrypt error:11800074:PKCS12 routines::pkcs12 cipherfinal error:empty password)
+2024/06/13 13:59:06 [alert] 7092#4112: the event "ngx_master_7092" was not signaled for 5s
+2024/06/13 14:04:53 [alert] 5788#4900: the event "ngx_master_5788" was not signaled for 5s
+2024/06/13 15:02:28 [notice] 6372#6600: signal process started
+2024/06/13 15:02:28 [error] 6372#6600: OpenEvent("Global\ngx_reload_5788") failed (2: The system cannot find the file specified)
+2024/06/13 15:10:44 [notice] 448#1880: signal process started
+2024/06/13 15:18:39 [notice] 7084#6792: signal process started
+2024/06/13 15:22:39 [notice] 2360#1892: signal process started
+2024/06/13 20:35:30 [emerg] 8924#8452: unknown directive "location/" in C:\nginx-1.26.1/conf/nginx.conf:36
+2024/06/13 20:35:32 [emerg] 1988#8392: unknown directive "location/" in C:\nginx-1.26.1/conf/nginx.conf:36
+2024/06/13 20:36:07 [notice] 7484#5908: signal process started
+2024/06/13 20:42:08 [notice] 8844#6692: signal process started
+2024/06/13 21:03:31 [notice] 8152#1284: signal process started
+2024/06/13 21:03:39 [notice] 9180#7764: signal process started
+2024/06/13 21:08:46 [notice] 5400#4568: signal process started
+2024/06/13 21:08:50 [notice] 4652#7932: signal process started
+2024/06/13 21:08:50 [error] 4652#7932: CreateFile() "C:\nginx-1.26.1/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2024/06/13 21:08:58 [notice] 8592#7112: signal process started
+2024/06/13 21:08:58 [error] 8592#7112: CreateFile() "C:\nginx-1.26.1/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2024/06/13 21:09:20 [notice] 5344#6588: signal process started
+2024/06/13 21:09:20 [error] 5344#6588: CreateFile() "C:\nginx-1.26.1/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2024/06/15 11:40:00 [notice] 4440#5108: signal process started
+2024/06/15 11:40:00 [error] 4440#5108: OpenEvent("Global\ngx_reload_4948") failed (2: The system cannot find the file specified)
+2024/06/15 11:55:05 [notice] 8264#5740: signal process started
+2024/06/15 12:32:33 [notice] 824#3704: signal process started
+2024/06/15 12:32:33 [error] 824#3704: OpenEvent("Global\ngx_reload_3536") failed (2: The system cannot find the file specified)
+2024/06/15 12:32:38 [notice] 4924#7064: signal process started
+2024/06/15 12:32:38 [error] 4924#7064: OpenEvent("Global\ngx_stop_3536") failed (2: The system cannot find the file specified)
+2024/06/15 13:30:09 [notice] 4560#5728: signal process started
+2024/06/15 13:30:15 [notice] 7940#6660: signal process started
+2024/06/15 13:30:19 [notice] 5668#5660: signal process started
+2024/06/15 13:30:19 [error] 5668#5660: CreateFile() "C:\nginx-1.26.1/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2024/06/19 08:56:59 [notice] 6668#3192: signal process started
+2024/06/19 08:56:59 [error] 6668#3192: OpenEvent("Global\ngx_reload_2728") failed (2: The system cannot find the file specified)
+2024/06/19 09:03:36 [notice] 5548#4876: signal process started
+2024/06/19 09:06:27 [notice] 7632#8184: signal process started
+2024/06/19 09:32:03 [notice] 4444#4448: signal process started
+2024/06/19 10:12:58 [notice] 5052#7328: signal process started
+2024/06/19 10:12:58 [error] 5052#7328: OpenEvent("Global\ngx_reload_4400") failed (2: The system cannot find the file specified)
+2024/06/27 09:16:08 [notice] 3980#3724: signal process started
+2024/06/27 09:25:48 [notice] 6784#6828: signal process started
+2024/06/28 20:13:18 [notice] 8972#5396: signal process started
+2024/06/28 20:31:43 [notice] 10224#3284: signal process started
