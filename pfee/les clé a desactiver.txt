@@ -1,0 +1,19 @@
+les clé a desactiver pour chaque type 
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\USBprint --- pour les imprimante 
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\HidUsb ---  pour les souris et clavier 
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\USBSTOR --- pour les flash disque 
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WINUSB  c'est pour telephone 
+Computer\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\RtlWlanu--- pour les adaptateur 
+
+- comment identifier chaque port whdo ??
+- si le port est desactiver et que mon peripherique est inserer commment je peut 
+reactiver le port et que sans debrancher le peripherique il sera lue 
+
+
+fonctionnalié desactiver le port complet ( avec les registre sa passe ) mais la 
+desactivation slective non car elle interagit pas immediatement sur le peripherique 
+
+
+
+https://learn.microsoft.com/fr-fr/mem/intune/configuration/administrative-templates-restrict-usb
